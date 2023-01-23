@@ -1,34 +1,49 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Gif from './Gif/Gif'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import Form from './Form/Form'
+import Button from './Button/Button'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [giphy, setGiphy] = useState('');
+  const [gif, setGif] = useState('Resident Evil')
+
+  useEffect(() => {
+    const giphyUrl = `https://api.giphy.com/v1/gifs/search?api_key=Pza0KCLP3VI6i9vdseFT0Yss0lU9buXc&q=${gif}&limit=25&offset=0&rating=r&lang=en`;
+
+    const random = Math.floor(Math.random() * 25) + 1;
+
+    async function makeApiCall(){
+      try {
+        const responseJson = await fetch(giphyUrl)
+        console.log(responseJson)
+        const data = await responseJson.json()
+        console.log(data, "___________________________")
+        setGiphy(data.data[random].images.original)
+      } catch(err){
+        console.log(err)
+      }
+
+    }
+    makeApiCall();
+  }, [gif]);
+
+  function liftGif(gif) {
+    console.log(gif);
+    setGif(gif);
+  }
+
+
+
+
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Form liftGif={liftGif} />
+      <Gif gifLink={giphy}/>
     </div>
   )
 }
 
-export default App
+export default App;
